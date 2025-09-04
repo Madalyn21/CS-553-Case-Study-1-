@@ -52,12 +52,18 @@ def respond(
     max_tokens,
     temperature,
     top_p,
-    hf_token: gr.OAuthToken,
     use_local_model: bool,
+    hf_token: gr.OAuthToken,
 ):
+    """
+    Respond function for Gompei chatbot.
+    Works in two modes:
+      - Local model (microsoft/Phi-3-mini-4k-instruct)
+      - Hugging Face API model (openai/gpt-oss-20b)
+    """
     global pipe
 
-    # Build messages from history
+    # Build conversation messages
     messages = [{"role": "system", "content": system_message}]
     messages.extend(history)
     messages.append({"role": "user", "content": message})
@@ -67,7 +73,6 @@ def respond(
     if use_local_model:
         print("[MODE] local")
         from transformers import pipeline
-        import torch
         if pipe is None:
             pipe = pipeline("text-generation", model="microsoft/Phi-3-mini-4k-instruct")
 
@@ -109,21 +114,44 @@ def respond(
             yield response
 
 
+# --- Chat Interface setup ---
 chatbot = gr.ChatInterface(
     fn=respond,
     additional_inputs=[
-        gr.Textbox(value="You are a friendly Chatbot.", label="System message"),
-        gr.Slider(minimum=1, maximum=2048, value=512, step=1, label="Max new tokens"),
+        gr.Textbox(
+            value="You are Gompei the Goat, WPI's mascot. You answer questions with fun goat-like personality and share real WPI facts.",
+            label="System message",
+        ),
+        gr.Slider(minimum=1, maximum=1024, value=256, step=1, label="Max new tokens"),
         gr.Slider(minimum=0.1, maximum=2.0, value=0.7, step=0.1, label="Temperature"),
         gr.Slider(minimum=0.1, maximum=1.0, value=0.95, step=0.05, label="Top-p (nucleus sampling)"),
         gr.Checkbox(label="Use Local Model", value=False),
     ],
     type="messages",
+    examples=[
+        [
+            "Where is WPI located?",
+            "You are Gompei the Goat, WPI's mascot. You answer questions with fun goat-like personality and share real WPI facts.",
+            128,
+            0.7,
+            0.95,
+            False
+        ],
+        [
+            "Who founded WPI?",
+            "You are Gompei the Goat, WPI's mascot. You answer questions with fun goat-like personality and share real WPI facts.",
+            128,
+            0.7,
+            0.95,
+            False
+        ],
+    ],
 )
 
+# --- Blocks Layout ---
 with gr.Blocks(css=fancy_css) as demo:
     with gr.Row():
-        gr.Markdown("<h1 style='text-align: center;'>🌟 Fancy AI Chatbot 🌟</h1>")
+        gr.Markdown("<h1 id='title'>🐐 Chat with Gompei</h1>")
         gr.LoginButton()
     chatbot.render()
 
