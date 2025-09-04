@@ -1,48 +1,17 @@
 import gradio as gr
 from huggingface_hub import InferenceClient
 import os
+import json
+import random
 
 pipe = None
 
-# Fancy styling
-fancy_css = """
-#main-container {
-    background-color: #f0f0f0;
-    font-family: 'Arial', sans-serif;
-}
-.gradio-container {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 20px;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-.gr-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.gr-button:hover {
-    background-color: #45a049;
-}
-.gr-slider input {
-    color: #4CAF50;
-}
-.gr-chat {
-    font-size: 16px;
-}
-#title {
-    text-align: center;
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: #333;
-}
-"""
+# Load WPI facts from JSON
+with open("facts.json", "r") as f:
+    WPI_FACTS = json.load(f)
+
+# Fancy CSS (same as before)
+fancy_css = """ ... """  # Keep your previous CSS here
 
 # --- Gompei chatbot response ---
 def respond(
@@ -53,13 +22,17 @@ def respond(
     temperature,
     top_p,
     use_local_model: bool,
-    hf_token: gr.OAuthToken = None,  # Optional login
+    hf_token: gr.OAuthToken = None,
 ):
     global pipe
 
+    # Pick a random WPI fact
+    fact = random.choice(WPI_FACTS)["text"]
+
     messages = [{"role": "system", "content": system_message}]
     messages.extend(history)
-    messages.append({"role": "user", "content": message})
+    # Append the user message + random fact for context
+    messages.append({"role": "user", "content": f"{message}\n\nFun fact: {fact}"})
 
     response = ""
 
@@ -84,7 +57,6 @@ def respond(
 
     else:
         print("[MODE] api")
-        # First try logged-in user token, then Space-level HF_TOKEN
         token_value = None
         if hf_token and getattr(hf_token, "token", None):
             token_value = hf_token.token
