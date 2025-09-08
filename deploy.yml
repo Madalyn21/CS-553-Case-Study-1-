@@ -16,5 +16,5 @@ jobs:
       - name: Push to Hugging Face Space
         uses: huggingface/huggingface-action@v1
         with:
-          repo-token: ${{ secrets.HF_TOKEN_USER }}
+          repo-token: ${{ secrets.HF_TOKEN }}
           repo-id: MadT21/CSDS553_Demo
