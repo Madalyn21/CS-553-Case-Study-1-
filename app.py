@@ -10,10 +10,7 @@ pipe = None
 with open("facts.json", "r") as f:
     WPI_FACTS = json.load(f)
 
-# Fancy CSS (same as before)
-fancy_css = """ ... """  # Keep your previous CSS here
-
-# --- Gompei chatbot response ---
+# Gompei chatbot response
 def respond(
     message,
     history: list[dict[str, str]],
@@ -35,7 +32,6 @@ def respond(
     messages.append({"role": "user", "content": f"{message}\n\nFun fact: {fact}"})
 
     response = ""
-
 
     print("[MODE] api")
     token_value = None
@@ -64,7 +60,7 @@ def respond(
         response += token
         yield response
 
-# --- Chat Interface ---
+# Chat Interface
 chatbot = gr.ChatInterface(
     fn=respond,
     additional_inputs=[
@@ -98,7 +94,7 @@ chatbot = gr.ChatInterface(
     ],
 )
 
-# --- Blocks layout ---
+# Blocks layout 
 with gr.Blocks(css=fancy_css) as demo:
     with gr.Row():
         gr.Markdown("<h1 id='title'>🐐 Chat with Gompei</h1>")
