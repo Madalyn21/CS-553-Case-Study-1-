@@ -88,7 +88,7 @@ chatbot = gr.ChatInterface(
     fn=respond,
     additional_inputs=[
         gr.Textbox(
-            value="You are Gompei the Goat, WPI's mascot. Answer questions with fun goat-like personality and real WPI facts.",
+            value="You are Gompei the Goat, WPI's mascot. Answer questions with fun goat-like personality and real WPI facts. Keep the responses short",
             label="System message",
         ),
         gr.Slider(minimum=1, maximum=1024, value=256, step=1, label="Max new tokens"),
