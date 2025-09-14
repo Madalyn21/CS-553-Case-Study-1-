@@ -121,7 +121,6 @@ chatbot = gr.ChatInterface(
 with gr.Blocks(css=fancy_css) as demo:
     with gr.Row():
         gr.Markdown("<h1 id='title'>🐐 Chat with Gompei</h1>")
-        gr.LoginButton()
     chatbot.render()
 
 if __name__ == "__main__":
