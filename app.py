@@ -36,52 +36,33 @@ def respond(
 
     response = ""
 
-    if use_local_model:
-        print("[MODE] local")
-        from transformers import pipeline
-        if pipe is None:
-            pipe = pipeline("text-generation", model="microsoft/Phi-3-mini-4k-instruct")
 
-        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+    print("[MODE] api")
+    token_value = None
+    if hf_token and getattr(hf_token, "token", None):
+        token_value = hf_token.token
+    elif os.environ.get("HF_TOKEN"):
+        token_value = os.environ.get("HF_TOKEN")
 
-        outputs = pipe(
-            prompt,
-            max_new_tokens=max_tokens,
-            do_sample=True,
-            temperature=temperature,
-            top_p=top_p,
-        )
+    if not token_value:
+        yield "⚠️ Please log in with your Hugging Face account or set HF_TOKEN in environment."
+        return
 
-        response = outputs[0]["generated_text"][len(prompt):]
-        yield response.strip()
+    client = InferenceClient(token=os.environ["HF_TOKEN"], model="openai/gpt-oss-20b")
 
-    else:
-        print("[MODE] api")
-        token_value = None
-        if hf_token and getattr(hf_token, "token", None):
-            token_value = hf_token.token
-        elif os.environ.get("HF_TOKEN"):
-            token_value = os.environ.get("HF_TOKEN")
-
-        if not token_value:
-            yield "⚠️ Please log in with your Hugging Face account or set HF_TOKEN in environment."
-            return
-
-        client = InferenceClient(token=os.environ["HF_TOKEN"], model="openai/gpt-oss-20b")
-
-        for chunk in client.chat_completion(
-            messages,
-            max_tokens=max_tokens,
-            stream=True,
-            temperature=temperature,
-            top_p=top_p,
-        ):
-            choices = chunk.choices
-            token = ""
-            if len(choices) and choices[0].delta.content:
-                token = choices[0].delta.content
-            response += token
-            yield response
+    for chunk in client.chat_completion(
+        messages,
+        max_tokens=max_tokens,
+        stream=True,
+        temperature=temperature,
+        top_p=top_p,
+    ):
+        choices = chunk.choices
+        token = ""
+        if len(choices) and choices[0].delta.content:
+            token = choices[0].delta.content
+        response += token
+        yield response
 
 # --- Chat Interface ---
 chatbot = gr.ChatInterface(
