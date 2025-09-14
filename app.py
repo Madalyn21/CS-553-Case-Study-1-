@@ -67,7 +67,7 @@ def respond(
             yield "⚠️ Please log in with your Hugging Face account or set HF_TOKEN in environment."
             return
 
-        client = InferenceClient(token=token_value, model="openai/gpt-oss-20b")
+        client = InferenceClient(token=os.environ["HF_TOKEN"], model="openai/gpt-oss-20b")
 
         for chunk in client.chat_completion(
             messages,
