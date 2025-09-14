@@ -94,7 +94,7 @@ chatbot = gr.ChatInterface(
         gr.Slider(minimum=1, maximum=1024, value=256, step=1, label="Max new tokens"),
         gr.Slider(minimum=0.1, maximum=2.0, value=0.7, step=0.1, label="Temperature"),
         gr.Slider(minimum=0.1, maximum=1.0, value=0.95, step=0.05, label="Top-p (nucleus sampling)"),
-        gr.Checkbox(label="Use Local Model", value=False),
+        #gr.Checkbox(label="Use Local Model", value=False),
     ],
     type="messages",
     examples=[
