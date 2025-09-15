@@ -10,6 +10,8 @@ pipe = None
 with open("facts.json", "r") as f:
     WPI_FACTS = json.load(f)
 
+fancy_css = """ ... """
+
 # Gompei chatbot response
 def respond(
     message,
