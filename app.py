@@ -20,7 +20,6 @@ def respond(
     max_tokens,
     temperature,
     top_p,
-    use_local_model: bool,
     hf_token: gr.OAuthToken = None,
 ):
     global pipe
